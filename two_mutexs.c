@@ -17,8 +17,8 @@ struct foo {
     struct foo *f_next; /* protected by hashlock */
     /* ... more stuff here ... */
 };
-struct foo *
-foo_alloc(int id) { /* allocate the object */
+
+struct foo * foo_alloc(int id) { /* allocate the object */
     struct foo *fp;
     int idx;
     if ((fp = malloc(sizeof(struct foo))) != NULL) {
@@ -40,14 +40,14 @@ foo_alloc(int id) { /* allocate the object */
     printf("foo_alloc\n");
     return(fp);
 }
-void
-foo_hold(struct foo *fp) { /* add a reference to the object */
+
+void foo_hold(struct foo *fp) { /* add a reference to the object */
     pthread_mutex_lock(&fp->f_lock);
     fp->f_count++;
     pthread_mutex_unlock(&fp->f_lock);
 }
-struct foo *
-foo_find(int id) { /* find an existing object */
+
+struct foo * foo_find(int id) { /* find an existing object */
     struct foo *fp;
     pthread_mutex_lock(&hashlock);
     for (fp = fh[HASH(id)]; fp != NULL; fp = fp->f_next) {
@@ -59,8 +59,8 @@ foo_find(int id) { /* find an existing object */
     pthread_mutex_unlock(&hashlock);
     return(fp);
 }
-void
-foo_rele(struct foo *fp) { /* release a reference to the object */
+
+void foo_rele(struct foo *fp) { /* release a reference to the object */
     struct foo *tfp;
     int idx;
     pthread_mutex_lock(&fp->f_lock);
@@ -96,12 +96,5 @@ foo_rele(struct foo *fp) { /* release a reference to the object */
 }
 
 int main() {
-    struct foo * fp;
-    fp = foo_alloc(0);
-    printf("id %d, count %d\n", fp->f_id, fp->f_count);
-    fp = foo_alloc(29);
-    printf("id %d, count %d\n", fp->f_id, fp->f_count);
-    fp = foo_find(0);
-    printf("id %d, count %d\n", fp->f_id, fp->f_count);
     exit(EXIT_SUCCESS);
 }
