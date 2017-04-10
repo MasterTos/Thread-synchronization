@@ -11,6 +11,7 @@
 
 struct msg {
     struct msg *m_next;
+    char * msg;
     /* ... more stuff here ... */
 };
 
@@ -55,10 +56,10 @@ int main() {
     int error;
     pthread_t tid1, tid2;
     void *tret;
-    error = pthread_create(&tid1, NULL, process_msg, NULL);
+    error = pthread_create(&tid1, NULL, (void *)process_msg, NULL);
     if (error)
         err_exit(error, "can’t create thread 1");
-    error = pthread_create(&tid2, NULL, loop_enqueue_msg, NULL);
+    error = pthread_create(&tid2, NULL, (void *)loop_enqueue_msg, NULL);
     if (error)
         err_exit(error, "can’t create thread 2");
     error = pthread_join(tid1, &tret);
