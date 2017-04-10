@@ -19,16 +19,26 @@ struct msg *workq;
 pthread_cond_t qready = PTHREAD_COND_INITIALIZER;
 pthread_mutex_t qlock = PTHREAD_MUTEX_INITIALIZER;
 
+void print_all_q() {
+    struct msg * mp;
+    for(mp = workq ; mp != NULL ; mp = mp->m_next) {
+        printf("%s ", mp->msg);
+    }
+    printf("\n");
+}
+
 void process_msg(void) {
     struct msg *mp;
     for (;;) {
         pthread_mutex_lock(&qlock);
         while (workq == NULL) {
-            pthread_cond_wait(&qready, &qlock);
+            printf("%d ",pthread_cond_wait(&qready, &qlock));
             printf("wait\n");
         }
         mp = workq;
+        //printf("dequeue %s %x %x\n", workq->msg, mp, workq);
         workq = mp->m_next;
+        print_all_q();
         pthread_mutex_unlock(&qlock);
         /* now process the message mp */
     }
@@ -39,14 +49,19 @@ void enqueue_msg(struct msg *mp) {
     pthread_mutex_lock(&qlock);
     mp->m_next = workq;
     workq = mp;
+    //printf("enqueue %s %x %x\n", mp->msg, mp, workq);
     pthread_mutex_unlock(&qlock);
     pthread_cond_signal(&qready);
 }
 
 void loop_enqueue_msg(void) {
     int i;
-    for(i = 1 ; i <= 2 ; i++) {
-        struct msg *mp = malloc(sizeof(struct msg));
+    for(i = 1 ; i <= 50 ; i++) {
+        struct msg * mp = malloc(sizeof(struct msg));
+        char * buff = malloc(sizeof(char) * 4);
+        sprintf(buff, "a%d", i);
+        mp->msg = buff;
+        //printf("-- %s %x %x\n", mp->msg, mp, buff);
         enqueue_msg(mp);
     }
     pthread_exit((void *)2);
