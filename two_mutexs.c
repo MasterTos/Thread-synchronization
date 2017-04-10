@@ -102,6 +102,7 @@ void id_entry(int x) {
     for(i = 0 ; i < 20 ; i++) {
         foo_alloc(x + i);
     }
+    pthread_exit((void *)2);
 }
 
 void print_all_foo_entry() {
@@ -114,7 +115,6 @@ void print_all_foo_entry() {
         if(fh[i] != NULL)
             printf("\n");
     }
-    pthread_exit((void *)2);
 }
 
 
