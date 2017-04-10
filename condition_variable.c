@@ -22,14 +22,16 @@ void process_msg(void) {
     struct msg *mp;
     for (;;) {
         pthread_mutex_lock(&qlock);
-        while (workq == NULL)
+        while (workq == NULL) {
             pthread_cond_wait(&qready, &qlock);
+            printf("wait\n");
+        }
         mp = workq;
         workq = mp->m_next;
         pthread_mutex_unlock(&qlock);
         /* now process the message mp */
-        pthread_exit((void *)2);
     }
+    pthread_exit((void *)2);
 }
 
 void enqueue_msg(struct msg *mp) {
@@ -42,13 +44,15 @@ void enqueue_msg(struct msg *mp) {
 
 void loop_enqueue_msg(void) {
     int i;
-    for(i = 1 ; i <= 50 ; i++) {
-        
+    for(i = 1 ; i <= 2 ; i++) {
+        struct msg *mp = malloc(sizeof(struct msg));
+        enqueue_msg(mp);
     }
     pthread_exit((void *)2);
 }
 
 int main() {
+    int error;
     pthread_t tid1, tid2;
     void *tret;
     error = pthread_create(&tid1, NULL, process_msg, NULL);
