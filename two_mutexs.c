@@ -101,9 +101,24 @@ void id_entry(int x) {
     }
 }
 
+void print_all_foo_entry() {
+    int i;
+    for(i = 0 ; i < NHASH ; i++) {
+        struct foo * tmp;
+        for(tmp = fh[i] ; tmp != NULL ; tmp = tmp->f_next ) {
+            printf("%d ", tmp->f_id);
+        }
+        if(fh[i] != NULL)
+            printf("\n");
+    }
+    
+}
+
 
 
 int main() {
     id_entry(0);
+    id_entry(29);
+    print_all_foo_entry();
     exit(EXIT_SUCCESS);
 }
