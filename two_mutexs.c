@@ -37,7 +37,6 @@ struct foo * foo_alloc(int id) { /* allocate the object */
         /* ... continue initialization ... */
         pthread_mutex_unlock(&fp->f_lock);
     }
-    printf("foo_alloc\n");
     return(fp);
 }
 
@@ -95,6 +94,16 @@ void foo_rele(struct foo *fp) { /* release a reference to the object */
     }
 }
 
+void id_entry(int x) {
+    int i;
+    for(i = 0 ; i < 20 ; i++) {
+        foo_alloc(x + i);
+    }
+}
+
+
+
 int main() {
+    id_entry(0);
     exit(EXIT_SUCCESS);
 }
