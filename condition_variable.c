@@ -6,6 +6,9 @@
 #include <errno.h>
 #include <string.h>
 
+#define err_exit(en, msg) \
+        do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
+
 struct msg {
     struct msg *m_next;
     /* ... more stuff here ... */
@@ -34,4 +37,9 @@ void enqueue_msg(struct msg *mp) {
     workq = mp;
     pthread_mutex_unlock(&qlock);
     pthread_cond_signal(&qready);
+}
+
+
+int main() {
+
 }
