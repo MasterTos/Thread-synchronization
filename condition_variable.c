@@ -29,16 +29,19 @@ void print_all_q() {
 
 void process_msg(void) {
     struct msg *mp;
+    int error;
     for (;;) {
         pthread_mutex_lock(&qlock);
         while (workq == NULL) {
-            printf("%d ",pthread_cond_wait(&qready, &qlock));
-            printf("wait\n");
+            error = pthread_cond_wait(&qready, &qlock);
+            if(error) {
+                perror("Can't wait cond");
+            }
         }
         mp = workq;
-        //printf("dequeue %s %x %x\n", workq->msg, mp, workq);
+        printf("- dequeue %s\n", workq->msg);
         workq = mp->m_next;
-        print_all_q();
+        //print_all_q();
         pthread_mutex_unlock(&qlock);
         /* now process the message mp */
     }
@@ -49,7 +52,7 @@ void enqueue_msg(struct msg *mp) {
     pthread_mutex_lock(&qlock);
     mp->m_next = workq;
     workq = mp;
-    //printf("enqueue %s %x %x\n", mp->msg, mp, workq);
+    printf("+ enqueue %s\n", mp->msg);
     pthread_mutex_unlock(&qlock);
     pthread_cond_signal(&qready);
 }
