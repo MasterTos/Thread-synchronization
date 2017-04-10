@@ -6,6 +6,9 @@
 #include <errno.h>
 #include <string.h>
 
+#define err_exit(en, msg) \
+        do { errno = en; perror(msg); exit(EXIT_FAILURE); } while (0)
+
 #define NHASH 29
 #define HASH(id) (((unsigned long)id)%NHASH)
 struct foo *fh[NHASH];
@@ -111,14 +114,43 @@ void print_all_foo_entry() {
         if(fh[i] != NULL)
             printf("\n");
     }
-    
+    pthread_exit((void *)2);
 }
 
 
 
 int main() {
-    id_entry(0);
-    id_entry(29);
+    int error;
+    pthread_t tid1, tid2, tid3;
+    void *tret;
+
+    error = pthread_create(&tid1, NULL, id_entry, 0);
+    if (error)
+        err_exit(error, "can’t create thread 1");
+
+    error = pthread_create(&tid2, NULL, id_entry, 29);
+    if (error)
+        err_exit(error, "can’t create thread 2");
+
+    error = pthread_create(&tid3, NULL, id_entry, 35);
+    if (error)
+        err_exit(error, "can’t create thread 2");
+
+    error = pthread_join(tid1, &tret);
+    if (error)
+        err_exit(error, "can’t join with thread 1");
+    printf("thread 1: exit code %ld\n", (long)tret);
+
+    error = pthread_join(tid2, &tret);
+    if (error)
+        err_exit(error, "can’t join with thread 2");
+    printf("thread 2: exit code %ld\n", (long)tret);
+
+    error = pthread_join(tid3, &tret);
+    if (error)
+        err_exit(error, "can’t join with thread 3");
+    printf("thread 3: exit code %ld\n", (long)tret);
+
     print_all_foo_entry();
     exit(EXIT_SUCCESS);
 }
