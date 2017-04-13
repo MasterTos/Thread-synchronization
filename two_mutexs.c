@@ -109,6 +109,8 @@ void print_all_foo_entry() {
     int i;
     for(i = 0 ; i < NHASH ; i++) {
         struct foo * tmp;
+        if(fh[i] != NULL)
+            printf("fh[%2d]: ", i);
         for(tmp = fh[i] ; tmp != NULL ; tmp = tmp->f_next ) {
             printf("%d ", tmp->f_id);
         }
