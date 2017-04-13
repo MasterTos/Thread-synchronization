@@ -112,7 +112,10 @@ void print_all_foo_entry() {
         if(fh[i] != NULL)
             printf("fh[%2d]: ", i);
         for(tmp = fh[i] ; tmp != NULL ; tmp = tmp->f_next ) {
-            printf("%d ", tmp->f_id);
+            printf("%d", tmp->f_id);
+            if(tmp->f_next != NULL) {
+                printf(" -> ");
+            }
         }
         if(fh[i] != NULL)
             printf("\n");
